@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GoldPulse | سوددهی هوشمند ماهانه</title>
+    <title>Profit Sharing | مشارکت در سود ماهانه</title>
     <link rel="stylesheet" href="styles.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
@@ -15,10 +15,9 @@
         <div class="header">
             <div class="logo">
                 <i class="fas fa-chart-line"></i>
-                <span>GoldPulse</span>
+                <span>Profit Sharing</span>
             </div>
             <div class="header-badge">
-                <span class="badge">نسخه 3.0</span>
                 <span class="badge premium">ثبت‌نام 105 USDT</span>
             </div>
             <div class="language-switch">
@@ -26,7 +25,7 @@
                 <button id="langEn" class="lang-btn">English</button>
             </div>
             <h1 id="mainTitle">مشارکت در سود ماهانه</h1>
-            <p id="mainSubtitle" class="subtitle">ثبت‌نام 105 USDT | پاداش معرف 10 USDT | حداکثر برداشت 300 USDT</p>
+            <p id="mainSubtitle" class="subtitle">ثبت‌نام 105 USDT | حداکثر برداشت 300 USDT</p>
         </div>
 
         <div class="connection-status" id="connectionStatus">
@@ -46,7 +45,11 @@
         <div id="mainContent" style="display: none;">
             <!-- تب‌ها -->
             <div class="tabs">
-                <button class="tab-btn active" data-tab="tab-deposit">
+                <button class="tab-btn active" data-tab="tab-profile">
+                    <i class="fas fa-user-circle"></i>
+                    <span id="tabProfileText">پروفایل</span>
+                </button>
+                <button class="tab-btn" data-tab="tab-deposit">
                     <i class="fas fa-arrow-down"></i>
                     <span id="tabDepositText">واریز به استخر</span>
                 </button>
@@ -62,14 +65,29 @@
                     <i class="fas fa-sign-out-alt"></i>
                     <span id="tabCancelText">انصراف</span>
                 </button>
-                <button class="tab-btn" data-tab="tab-profile">
-                    <i class="fas fa-user-circle"></i>
-                    <span id="tabProfileText">پروفایل</span>
-                </button>
+            </div>
+
+            <!-- تب پروفایل (اولین برگه) -->
+            <div class="tab-content active" id="tab-profile">
+                <div class="card glass-effect">
+                    <div class="card-header">
+                        <i class="fas fa-user-circle"></i>
+                        <h2 id="profileTitle">اطلاعات کاربری</h2>
+                    </div>
+                    <div class="card-body">
+                        <div id="userInfoSection">
+                            <div class="skeleton-loader">
+                                <div class="skeleton-line"></div>
+                                <div class="skeleton-line"></div>
+                                <div class="skeleton-line"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
 
             <!-- تب واریز به استخر -->
-            <div class="tab-content active" id="tab-deposit">
+            <div class="tab-content" id="tab-deposit">
                 <div class="card glass-effect">
                     <div class="card-header">
                         <i class="fas fa-arrow-down"></i>
@@ -105,7 +123,7 @@
                         </button>
                         <div class="info-tip">
                             <i class="fas fa-lightbulb"></i>
-                            <p id="depositInfo">هر کسی می‌تواند به استخر واریز کند. با واریز شما، سود همه کاربران افزایش می‌یابد!</p>
+                            <p id="depositInfo">هر کسی می‌تواند به استخر واریز کند. با واریز شما، سود همه کاربران افزایش می‌یابد.</p>
                         </div>
                     </div>
                 </div>
@@ -121,7 +139,7 @@
                     <div class="card-body">
                         <div class="fee-display">
                             <div class="fee-item">
-                                <span class="fee-label">💰 هزینه ثبت‌نام</span>
+                                <span class="fee-label" id="feeLabel">هزینه ثبت‌نام</span>
                                 <span class="fee-value">105 USDT</span>
                             </div>
                         </div>
@@ -135,7 +153,7 @@
                         </button>
                         <div class="info-tip warning">
                             <i class="fas fa-shield-alt"></i>
-                            <p id="registerInfo">ثبت‌نام فقط یکبار انجام می‌شود و برای برداشت سود الزامی است</p>
+                            <p id="registerInfo">ثبت‌نام فقط یکبار انجام می‌شود و برای برداشت سود الزامی است.</p>
                         </div>
                     </div>
                 </div>
@@ -196,32 +214,13 @@
                     </div>
                 </div>
             </div>
-
-            <!-- تب پروفایل -->
-            <div class="tab-content" id="tab-profile">
-                <div class="card glass-effect">
-                    <div class="card-header">
-                        <i class="fas fa-user-circle"></i>
-                        <h2 id="profileTitle">اطلاعات کاربری</h2>
-                    </div>
-                    <div class="card-body">
-                        <div id="userInfoSection">
-                            <div class="skeleton-loader">
-                                <div class="skeleton-line"></div>
-                                <div class="skeleton-line"></div>
-                                <div class="skeleton-line"></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
         </div>
 
         <div id="alertContainer"></div>
         
         <footer class="footer">
-            <p>© 2025 GoldPulse | پلتفرم هوشمند مشارکت در سود</p>
-            <p class="contract-address">قرارداد: <span id="contractAddr">0x475b8E322EC5BD5CedD800afED3f599E346caB32</span></p>
+            <p>© 2025 Profit Sharing | پلتفرم هوشمند مشارکت در سود</p>
+            <p class="contract-address">Contract: <span id="contractAddr">0x475b8E322EC5BD5CedD800afED3f599E346caB32</span></p>
         </footer>
     </div>
 
