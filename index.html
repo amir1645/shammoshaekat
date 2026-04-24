@@ -18,61 +18,61 @@
                 <span>Profit Sharing</span>
             </div>
             <div class="header-badge">
-                <span class="badge premium">ثبت‌نام 105 USDT</span>
+                <span class="badge premium">Registration 105 USDT</span>
             </div>
             <div class="language-switch">
                 <button id="langFa" class="lang-btn active">فارسی</button>
                 <button id="langEn" class="lang-btn">English</button>
             </div>
             <h1 id="mainTitle">مشارکت در سود ماهانه</h1>
-            <p id="mainSubtitle" class="subtitle">ثبت‌نام 105 USDT | حداکثر برداشت 300 USDT</p>
+            <p id="mainSubtitle" class="subtitle">Registration 105 USDT | Max Withdrawal 300 USDT</p>
         </div>
 
         <div class="connection-status" id="connectionStatus">
             <div class="wallet-info">
                 <div class="status-indicator" id="statusIndicator"></div>
-                <span id="statusText">در حال اتصال...</span>
-                <span class="network-badge" id="networkBadge">Polygon</span>
+                <span id="statusText">Connecting...</span>
+                <span class="network-badge">Polygon</span>
             </div>
             <div class="wallet-actions">
                 <button id="connectBtn" class="btn-primary">
                     <i class="fas fa-plug"></i>
-                    <span id="connectText">اتصال کیف پول</span>
+                    <span id="connectText">Connect Wallet</span>
                 </button>
             </div>
         </div>
 
         <div id="mainContent" style="display: none;">
-            <!-- تب‌ها -->
-            <div class="tabs">
-                <button class="tab-btn active" data-tab="tab-profile">
+            <!-- Tabs -->
+            <div class="tabs" id="tabsContainer">
+                <button class="tab-btn" data-tab="profile">
                     <i class="fas fa-user-circle"></i>
-                    <span id="tabProfileText">پروفایل</span>
+                    <span class="tab-text-profile">Profile</span>
                 </button>
-                <button class="tab-btn" data-tab="tab-deposit">
+                <button class="tab-btn" data-tab="deposit">
                     <i class="fas fa-arrow-down"></i>
-                    <span id="tabDepositText">واریز به استخر</span>
+                    <span class="tab-text-deposit">Deposit</span>
                 </button>
-                <button class="tab-btn" data-tab="tab-register">
+                <button class="tab-btn" data-tab="register">
                     <i class="fas fa-user-plus"></i>
-                    <span id="tabRegisterText">ثبت‌نام</span>
+                    <span class="tab-text-register">Register</span>
                 </button>
-                <button class="tab-btn" data-tab="tab-withdraw">
+                <button class="tab-btn" data-tab="withdraw">
                     <i class="fas fa-arrow-up"></i>
-                    <span id="tabWithdrawText">برداشت سود</span>
+                    <span class="tab-text-withdraw">Withdraw</span>
                 </button>
-                <button class="tab-btn" data-tab="tab-cancel">
+                <button class="tab-btn" data-tab="cancel">
                     <i class="fas fa-sign-out-alt"></i>
-                    <span id="tabCancelText">انصراف</span>
+                    <span class="tab-text-cancel">Cancel</span>
                 </button>
             </div>
 
-            <!-- تب پروفایل (اولین برگه) -->
-            <div class="tab-content active" id="tab-profile">
+            <!-- Tab: Profile (First) -->
+            <div class="tab-content" id="tab-profile">
                 <div class="card glass-effect">
                     <div class="card-header">
                         <i class="fas fa-user-circle"></i>
-                        <h2 id="profileTitle">اطلاعات کاربری</h2>
+                        <h2 id="profileTitle">User Profile</h2>
                     </div>
                     <div class="card-body">
                         <div id="userInfoSection">
@@ -86,29 +86,27 @@
                 </div>
             </div>
 
-            <!-- تب واریز به استخر -->
+            <!-- Tab: Deposit -->
             <div class="tab-content" id="tab-deposit">
                 <div class="card glass-effect">
                     <div class="card-header">
                         <i class="fas fa-arrow-down"></i>
-                        <h2 id="depositTitle">واریز به استخر</h2>
+                        <h2 id="depositTitle">Deposit to Pool</h2>
                     </div>
                     <div class="card-body">
                         <div class="stats-mini">
                             <div class="stat-mini">
-                                <span class="stat-mini-label" id="poolBalanceLabel">موجودی استخر</span>
+                                <span class="stat-mini-label" id="poolBalanceLabel">Pool Balance</span>
                                 <span class="stat-mini-value" id="poolBalance">0 USDT</span>
                             </div>
                             <div class="stat-mini">
-                                <span class="stat-mini-label" id="activeUsersLabel">کاربران فعال</span>
+                                <span class="stat-mini-label" id="activeUsersLabel">Active Users</span>
                                 <span class="stat-mini-value" id="totalUsers">0</span>
                             </div>
                         </div>
                         <div class="form-group">
-                            <label id="amountLabel">مبلغ (USDT)</label>
-                            <div class="amount-input-group">
-                                <input type="number" id="depositAmount" placeholder="0" step="1" min="1">
-                            </div>
+                            <label id="amountLabel">Amount (USDT)</label>
+                            <input type="number" id="depositAmount" placeholder="0" step="1" min="1">
                             <div class="quick-amount">
                                 <button class="quick-btn" data-amount="10">10 USDT</button>
                                 <button class="quick-btn" data-amount="50">50 USDT</button>
@@ -119,97 +117,97 @@
                         </div>
                         <button id="depositBtn" class="btn-deposit w-full">
                             <i class="fas fa-wallet"></i>
-                            <span id="depositBtnText">واریز به استخر</span>
+                            <span id="depositBtnText">Deposit to Pool</span>
                         </button>
                         <div class="info-tip">
                             <i class="fas fa-lightbulb"></i>
-                            <p id="depositInfo">هر کسی می‌تواند به استخر واریز کند. با واریز شما، سود همه کاربران افزایش می‌یابد.</p>
+                            <p id="depositInfo">Anyone can deposit to the pool. Your deposit increases everyone's monthly profit.</p>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- تب ثبت‌نام -->
+            <!-- Tab: Register -->
             <div class="tab-content" id="tab-register">
                 <div class="card glass-effect">
                     <div class="card-header">
                         <i class="fas fa-user-plus"></i>
-                        <h2 id="registerTitle">ثبت‌نام در طرح</h2>
+                        <h2 id="registerTitle">Register Plan</h2>
                     </div>
                     <div class="card-body">
                         <div class="fee-display">
                             <div class="fee-item">
-                                <span class="fee-label" id="feeLabel">هزینه ثبت‌نام</span>
+                                <span class="fee-label" id="feeLabel">Registration Fee</span>
                                 <span class="fee-value">105 USDT</span>
                             </div>
                         </div>
                         <div class="form-group">
-                            <label id="referrerLabel">آدرس معرف (اختیاری)</label>
-                            <input type="text" id="referrerAddress" placeholder="0x... یا خالی بگذارید">
+                            <label id="referrerLabel">Referrer Address (Optional)</label>
+                            <input type="text" id="referrerAddress" placeholder="0x... or leave empty">
                         </div>
                         <button id="registerBtn" class="btn-register w-full">
                             <i class="fas fa-check-circle"></i>
-                            <span id="registerBtnText">ثبت‌نام (105 USDT)</span>
+                            <span id="registerBtnText">Register (105 USDT)</span>
                         </button>
                         <div class="info-tip warning">
                             <i class="fas fa-shield-alt"></i>
-                            <p id="registerInfo">ثبت‌نام فقط یکبار انجام می‌شود و برای برداشت سود الزامی است.</p>
+                            <p id="registerInfo">Registration is one-time only and required for profit withdrawal.</p>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- تب برداشت سود -->
+            <!-- Tab: Withdraw -->
             <div class="tab-content" id="tab-withdraw">
                 <div class="card glass-effect">
                     <div class="card-header">
                         <i class="fas fa-arrow-up"></i>
-                        <h2 id="withdrawTitle">برداشت سود</h2>
+                        <h2 id="withdrawTitle">Withdraw Profit</h2>
                     </div>
                     <div class="card-body">
                         <div class="stats-mini">
                             <div class="stat-mini">
-                                <span class="stat-mini-label" id="shareLabel">سود این ماه</span>
+                                <span class="stat-mini-label" id="shareLabel">This Month Share</span>
                                 <span class="stat-mini-value" id="sharePerUser">0 USDT</span>
                             </div>
                             <div class="stat-mini">
-                                <span class="stat-mini-label" id="remainingLabel">باقیمانده قابل برداشت</span>
+                                <span class="stat-mini-label" id="remainingLabel">Remaining Withdrawable</span>
                                 <span class="stat-mini-value" id="remainingWithdraw">0 USDT</span>
                             </div>
                         </div>
                         <button id="withdrawBtn" class="btn-withdraw w-full">
                             <i class="fas fa-money-bill-wave"></i>
-                            <span id="withdrawBtnText">برداشت سود ماهانه</span>
+                            <span id="withdrawBtnText">Withdraw Monthly Profit</span>
                         </button>
                         <div class="info-list">
                             <div class="info-item">
                                 <i class="fas fa-calculator"></i>
-                                <span id="calcInfo">سهم هر کاربر = موجودی استخر ÷ تعداد کاربران فعال</span>
+                                <span id="calcInfo">Share = Pool Balance ÷ Active Users</span>
                             </div>
                             <div class="info-item">
                                 <i class="fas fa-trophy"></i>
-                                <span id="maxWithdrawInfo">حداکثر برداشت کل: 300 USDT</span>
+                                <span id="maxWithdrawInfo">Max Total Withdrawal: 300 USDT</span>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- تب انصراف -->
+            <!-- Tab: Cancel -->
             <div class="tab-content" id="tab-cancel">
                 <div class="card glass-effect">
                     <div class="card-header">
                         <i class="fas fa-sign-out-alt"></i>
-                        <h2 id="cancelTitle">انصراف از طرح</h2>
+                        <h2 id="cancelTitle">Cancel Plan</h2>
                     </div>
                     <div class="card-body">
                         <button id="cancelBtn" class="btn-cancel w-full">
                             <i class="fas fa-exclamation-triangle"></i>
-                            <span id="cancelBtnText">درخواست انصراف</span>
+                            <span id="cancelBtnText">Request Cancellation</span>
                         </button>
                         <div class="info-tip danger">
                             <i class="fas fa-skull-crosswalk"></i>
-                            <p id="cancelInfo">پس از انصراف، دیگر سود ماهانه دریافت نمی‌کنید و هزینه ثبت‌نام بازگردانده نمی‌شود. درخواست انصراف توسط مدیر بررسی می‌شود و در صورت احراز شرایط، مابقی مبلغ به کیف پول شما واریز می‌گردد.</p>
+                            <p id="cancelInfo">After cancellation, you will no longer receive monthly profits and the registration fee will not be refunded. The cancellation request will be reviewed by the admin, and if eligible, the remaining amount will be sent to your wallet.</p>
                         </div>
                     </div>
                 </div>
@@ -219,7 +217,7 @@
         <div id="alertContainer"></div>
         
         <footer class="footer">
-            <p>© 2025 Profit Sharing | پلتفرم هوشمند مشارکت در سود</p>
+            <p>© 2025 Profit Sharing | Smart Profit Sharing Platform</p>
             <p class="contract-address">Contract: <span id="contractAddr">0x475b8E322EC5BD5CedD800afED3f599E346caB32</span></p>
         </footer>
     </div>
