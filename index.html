@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>داشبورد مشارکت در سود | واریز و برداشت</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1rem;
+            opacity: 0.9;
+        }
+
+        .connection-status {
+            background: rgba(255,255,255,0.95);
+            border-radius: 15px;
+            padding: 15px 25px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .wallet-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        button:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        }
+
+        button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .btn-deposit {
+            background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);
+        }
+
+        .btn-withdraw {
+            background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+        }
+
+        .btn-cancel {
+            background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        .card h2 {
+            color: #333;
+            margin-bottom: 20px;
+            border-right: 4px solid #667eea;
+            padding-right: 15px;
+        }
+
+        .stat-group {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .stat-item {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 12px;
+            text-align: center;
+            border: 1px solid #e0e0e0;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 5px;
+        }
+
+        .stat-value {
+            font-size: 20px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .stat-value.positive {
+            color: #27ae60;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #555;
+            font-weight: 500;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 14px;
+            transition: border-color 0.2s;
+            background: white;
+            font-family: monospace;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .info-box {
+            background: #e3f2fd;
+            border-right: 4px solid #2196f3;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        .info-box p {
+            margin: 5px 0;
+            font-size: 14px;
+        }
+
+        .user-details {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 15px;
+            margin-top: 15px;
+            border: 1px solid #e0e0e0;
+        }
+
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .detail-row:last-child {
+            border-bottom: none;
+        }
+
+        .detail-label {
+            font-weight: bold;
+            color: #555;
+        }
+
+        .detail-value {
+            color: #333;
+            font-family: monospace;
+        }
+
+        .alert {
+            padding: 12px 15px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            display: none;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateY(-20px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .alert.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+            display: block;
+        }
+
+        .alert.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+            display: block;
+        }
+
+        .alert.info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+            display: block;
+        }
+
+        .alert.warning {
+            background: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeeba;
+            display: block;
+        }
+
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(0,0,0,0.1);
+            border-radius: 50%;
+            border-top-color: #667eea;
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .amount-input-group {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .amount-input-group input {
+            flex: 1;
+        }
+
+        .quick-amount {
+            display: flex;
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        .quick-amount button {
+            flex: 1;
+            padding: 8px;
+            font-size: 12px;
+        }
+
+        @media (max-width: 768px) {
+            .grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .header h1 {
+                font-size: 1.5rem;
+            }
+            
+            .connection-status {
+                flex-direction: column;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>💰 مشارکت در سود ماهانه</h1>
+            <p>واریز به استخر | برداشت سود ماهانه | بازدهی تا ۱۰۰٪</p>
+        </div>
+
+        <div class="connection-status" id="connectionStatus">
+            <div class="wallet-info">
+                <span>🔌 وضعیت:</span>
+                <span id="statusText">در حال اتصال...</span>
+            </div>
+            <button id="connectBtn">🔗 اتصال کیف پول</button>
+        </div>
+
+        <div id="mainContent" style="display: none;">
+            <div class="grid">
+                <div class="card">
+                    <h2>📊 اطلاعات استخر</h2>
+                    <div class="stat-group">
+                        <div class="stat-item">
+                            <div class="stat-label">کاربران فعال</div>
+                            <div class="stat-value" id="totalUsers">-</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-label">موجودی استخر</div>
+                            <div class="stat-value positive" id="poolBalance">-</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-label">کل ثبت‌نام‌ها</div>
+                            <div class="stat-value" id="totalRegs">-</div>
+                        </div>
+                    </div>
+                    <div class="stat-group">
+                        <div class="stat-item">
+                            <div class="stat-label">ماه جاری</div>
+                            <div class="stat-value" id="currentMonth">-</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-label">سود هر کاربر</div>
+                            <div class="stat-value positive" id="sharePerUser">-</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-label">وضعیت ماه</div>
+                            <div class="stat-value" id="monthStatus">-</div>
+                        </div>
+                    </div>
+                    <div class="info-box">
+                        <p>📌 <strong>نکات مهم:</strong></p>
+                        <p>• هزینه ثبت‌نام: 1 USDT (یکبار)</p>
+                        <p>• پاداش معرف: 0.25 USDT</p>
+                        <p>• حداکثر برداشت کل: 2 USDT (سود خالص 1 USDT)</p>
+                        <p>• هر کاربر فقط یک بار در ماه می‌تواند برداشت کند</p>
+                        <p>• هر کسی می‌تواند به استخر واریز کند و سود بگیرد</p>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h2>👤 اطلاعات کاربری</h2>
+                    <div id="userInfoSection">
+                        <div style="text-align: center; padding: 20px;">
+                            <div class="loading"></div>
+                            <p style="margin-top: 10px;">در حال اتصال به کیف پول...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid">
+                <div class="card">
+                    <h2>💰 واریز به استخر</h2>
+                    <div class="form-group">
+                        <label>مبلغ به USDT</label>
+                        <div class="amount-input-group">
+                            <input type="number" id="depositAmount" placeholder="مبلغ مورد نظر" step="1" min="1">
+                        </div>
+                        <div class="quick-amount">
+                            <button onclick="setDepositAmount(10)">10 USDT</button>
+                            <button onclick="setDepositAmount(50)">50 USDT</button>
+                            <button onclick="setDepositAmount(100)">100 USDT</button>
+                            <button onclick="setDepositAmount(500)">500 USDT</button>
+                        </div>
+                    </div>
+                    <button id="depositBtn" class="btn-deposit">💸 واریز به استخر</button>
+                    <div class="info-box" style="margin-top: 15px; background: #e8f5e9;">
+                        <p>💡 <strong>نکته:</strong> با واریز به استخر، موجودی استخر افزایش می‌یابد و سود ماهانه همه کاربران بیشتر می‌شود</p>
+                        <p>📈 شما نیز به نسبت سهم خود از استخر سود خواهید برد</p>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h2>📝 ثبت‌نام در طرح</h2>
+                    <div class="form-group">
+                        <label>آدرس معرف (اختیاری)</label>
+                        <input type="text" id="referrerAddress" placeholder="0x... یا خالی بگذارید">
+                        <small style="color: #666; display: block; margin-top: 5px;">آدرس کیف پول شخصی که شما را معرفی کرده است</small>
+                    </div>
+                    <button id="registerBtn">✅ ثبت‌نام (1 USDT)</button>
+                    <div class="info-box" style="margin-top: 15px; background: #fff8e1;">
+                        <p>⚠️ <strong>توجه:</strong> ثبت‌نام فقط یکبار انجام می‌شود و برای برداشت سود الزامی است</p>
+                        <p>🎁 شخص معرف 0.25 USDT دریافت می‌کند</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid">
+                <div class="card">
+                    <h2>⚡ برداشت سود</h2>
+                    <button id="withdrawBtn" class="btn-withdraw">💸 برداشت سود ماهانه</button>
+                    <div class="info-box" style="margin-top: 15px;">
+                        <p>📈 <strong>حداکثر برداشت کل:</strong> 2 USDT</p>
+                        <p>🔄 هر کاربر فقط یک بار در ماه می‌تواند برداشت کند</p>
+                        <p>⏰ سود هر کاربر = (موجودی استخر / تعداد کاربران فعال)</p>
+                        <p>💡 بعد از فعال‌سازی ماه توسط مدیر، می‌توانید برداشت کنید</p>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h2>❌ انصراف از طرح</h2>
+                    <button id="cancelBtn" class="btn-cancel">❌ انصراف از طرح</button>
+                    <div class="info-box" style="margin-top: 15px; background: #fbe9e7;">
+                        <p>⚠️ <strong>هشدار:</strong> پس از انصراف:</p>
+                        <p>• دیگر سود ماهانه دریافت نمی‌کنید</p>
+                        <p>• هزینه ثبت‌نام بازگردانده نمی‌شود</p>
+                        <p>• فقط مبلغی که تاکنون برداشت کرده‌اید برای شما باقی می‌ماند</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="alertContainer"></div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/web3@1.10.0/dist/web3.min.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
