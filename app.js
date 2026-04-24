@@ -1,202 +1,174 @@
-// ==================== آدرس قرارداد (به‌روز شده) ====================
-const CONTRACT_ADDRESS = "0x475b8E322EC5BD5CedD800afED3f599E346caB32";
+// ==================== SETUP ====================
+const CONTRACT_ADDRESS = "0x93796012ae35e91e946b3b016f5218191a021557";
 const USDT_ADDRESS = "0xc2132D05D31c914a87C6611C10748AEb04B58e8F";
 
-// ==================== ABI قرارداد ====================
+const GAS_LIMIT_MULTIPLIER = 1.5;
+const DEFAULT_GAS_LIMIT = 1000000;
+
+// ==================== ABI ====================
 const USDT_ABI = [
-    {"constant":true,"inputs":[{"name":"owner","type":"address"},{"name":"spender","type":"address"}],"name":"allowance","outputs":[{"name":"","type":"uint256"}],"type":"function"},
-    {"constant":false,"inputs":[{"name":"spender","type":"address"},{"name":"amount","type":"uint256"}],"name":"approve","outputs":[{"name":"","type":"bool"}],"type":"function"},
-    {"constant":true,"inputs":[{"name":"account","type":"address"}],"name":"balanceOf","outputs":[{"name":"","type":"uint256"}],"type":"function"},
-    {"constant":false,"inputs":[{"name":"to","type":"address"},{"name":"amount","type":"uint256"}],"name":"transfer","outputs":[{"name":"","type":"bool"}],"type":"function"}
+    {
+        "constant": false,
+        "inputs": [
+            { "name": "spender", "type": "address" },
+            { "name": "amount", "type": "uint256" }
+        ],
+        "name": "approve",
+        "outputs": [{ "name": "", "type": "bool" }],
+        "type": "function"
+    },
+    {
+        "constant": true,
+        "inputs": [
+            { "name": "owner", "type": "address" },
+            { "name": "spender", "type": "address" }
+        ],
+        "name": "allowance",
+        "outputs": [{ "name": "", "type": "uint256" }],
+        "type": "function"
+    },
+    {
+        "constant": true,
+        "inputs": [{ "name": "account", "type": "address" }],
+        "name": "balanceOf",
+        "outputs": [{ "name": "", "type": "uint256" }],
+        "type": "function"
+    },
+    {
+        "constant": false,
+        "inputs": [
+            { "name": "to", "type": "address" },
+            { "name": "amount", "type": "uint256" }
+        ],
+        "name": "transfer",
+        "outputs": [{ "name": "", "type": "bool" }],
+        "type": "function"
+    }
 ];
 
 const CONTRACT_ABI = [
-    {"inputs":[{"internalType":"address","name":"_teamWallet","type":"address"}],"stateMutability":"nonpayable","type":"constructor"},
-    {"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"user","type":"address"},{"indexed":false,"internalType":"uint256","name":"amount","type":"uint256"}],"name":"DepositedToPool","type":"event"},
-    {"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"user","type":"address"},{"indexed":true,"internalType":"uint8","name":"exitType","type":"uint8"}],"name":"ExitedPool","type":"event"},
-    {"anonymous":false,"inputs":[{"indexed":true,"internalType":"uint256","name":"month","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"sharePerUser","type":"uint256"}],"name":"MonthInitialized","type":"event"},
-    {"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"previousOwner","type":"address"},{"indexed":true,"internalType":"address","name":"newOwner","type":"address"}],"name":"OwnershipTransferred","type":"event"},
-    {"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"user","type":"address"},{"indexed":true,"internalType":"address","name":"referrer","type":"address"}],"name":"Registered","type":"event"},
-    {"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"newWallet","type":"address"}],"name":"TeamWalletUpdated","type":"event"},
-    {"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"user","type":"address"},{"indexed":false,"internalType":"uint256","name":"amount","type":"uint256"},{"indexed":true,"internalType":"uint256","name":"month","type":"uint256"}],"name":"Withdrawn","type":"event"},
-    {"inputs":[],"name":"MAX_REGISTRATIONS","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},
-    {"inputs":[],"name":"MAX_WITHDRAWAL","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},
-    {"inputs":[],"name":"REFERRAL_REWARD","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},
-    {"inputs":[],"name":"REGISTRATION_FEE","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},
-    {"inputs":[],"name":"TEAM_REWARD","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},
-    {"inputs":[],"name":"USDT","outputs":[{"internalType":"contract IERC20","name":"","type":"address"}],"stateMutability":"view","type":"function"},
-    {"inputs":[],"name":"cancel","outputs":[],"stateMutability":"nonpayable","type":"function"},
-    {"inputs":[{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"depositToPool","outputs":[],"stateMutability":"nonpayable","type":"function"},
-    {"inputs":[{"internalType":"address","name":"token","type":"address"},{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"emergencyWithdraw","outputs":[],"stateMutability":"nonpayable","type":"function"},
-    {"inputs":[{"internalType":"uint256","name":"month","type":"uint256"}],"name":"getMonthInfo","outputs":[{"internalType":"bool","name":"initialized","type":"bool"},{"internalType":"uint256","name":"poolBalance","type":"uint256"},{"internalType":"uint256","name":"userCount","type":"uint256"},{"internalType":"uint256","name":"sharePerUser","type":"uint256"},{"internalType":"uint256","name":"snapshotTime","type":"uint256"}],"stateMutability":"view","type":"function"},
-    {"inputs":[],"name":"getPoolInfo","outputs":[{"internalType":"uint256","name":"totalUsers","type":"uint256"},{"internalType":"uint256","name":"balance","type":"uint256"},{"internalType":"uint256","name":"currentMonth","type":"uint256"},{"internalType":"bool","name":"monthInitialized","type":"bool"},{"internalType":"uint256","name":"sharePerUser","type":"uint256"},{"internalType":"uint256","name":"totalRegs","type":"uint256"},{"internalType":"uint256","name":"maxRegs","type":"uint256"}],"stateMutability":"view","type":"function"},
-    {"inputs":[{"internalType":"address","name":"user","type":"address"}],"name":"getRemainingWithdrawal","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},
-    {"inputs":[{"internalType":"address","name":"user","type":"address"}],"name":"getUserInfo","outputs":[{"internalType":"uint256","name":"joinTime","type":"uint256"},{"internalType":"uint256","name":"totalWithdrawn","type":"uint256"},{"internalType":"uint256","name":"lastWithdrawMonth","type":"uint256"},{"internalType":"address","name":"referrer","type":"address"},{"internalType":"bool","name":"registered","type":"bool"},{"internalType":"bool","name":"isActive","type":"bool"},{"internalType":"bool","name":"withdrawnThisMonth","type":"bool"}],"stateMutability":"view","type":"function"},
-    {"inputs":[],"name":"initializeMonth","outputs":[],"stateMutability":"nonpayable","type":"function"},
-    {"inputs":[],"name":"isWithinDistributionWindow","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},
-    {"inputs":[{"internalType":"uint256","name":"","type":"uint256"}],"name":"months","outputs":[{"internalType":"uint64","name":"poolBalance","type":"uint64"},{"internalType":"uint32","name":"userCount","type":"uint32"},{"internalType":"uint32","name":"sharePerUser","type":"uint32"},{"internalType":"uint32","name":"snapshotTime","type":"uint32"},{"internalType":"bool","name":"initialized","type":"bool"}],"stateMutability":"view","type":"function"},
-    {"inputs":[],"name":"owner","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},
-    {"inputs":[{"internalType":"address","name":"_referrer","type":"address"}],"name":"register","outputs":[],"stateMutability":"nonpayable","type":"function"},
-    {"inputs":[{"internalType":"address","name":"user","type":"address"}],"name":"removeFromPool","outputs":[],"stateMutability":"nonpayable","type":"function"},
-    {"inputs":[],"name":"renounceOwnership","outputs":[],"stateMutability":"nonpayable","type":"function"},
-    {"inputs":[{"internalType":"address","name":"newWallet","type":"address"}],"name":"setTeamWallet","outputs":[],"stateMutability":"nonpayable","type":"function"},
-    {"inputs":[],"name":"teamWallet","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},
-    {"inputs":[],"name":"totalActiveUsers","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},
-    {"inputs":[],"name":"totalPoolBalance","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},
-    {"inputs":[],"name":"totalRegistrations","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},
-    {"inputs":[{"internalType":"address","name":"newOwner","type":"address"}],"name":"transferOwnership","outputs":[],"stateMutability":"nonpayable","type":"function"},
-    {"inputs":[{"internalType":"address","name":"","type":"address"}],"name":"users","outputs":[{"internalType":"uint64","name":"joinTime","type":"uint64"},{"internalType":"uint64","name":"totalWithdrawn","type":"uint64"},{"internalType":"uint32","name":"lastWithdrawMonth","type":"uint32"},{"internalType":"address","name":"referrer","type":"address"},{"internalType":"bool","name":"registered","type":"bool"},{"internalType":"bool","name":"isActive","type":"bool"},{"internalType":"bool","name":"withdrawnThisMonth","type":"bool"}],"stateMutability":"view","type":"function"},
-    {"inputs":[],"name":"withdraw","outputs":[],"stateMutability":"nonpayable","type":"function"}
+    {
+        "constant": true,
+        "inputs": [],
+        "name": "REGISTRATION_FEE",
+        "outputs": [{ "name": "", "type": "uint256" }],
+        "type": "function"
+    },
+    {
+        "constant": true,
+        "inputs": [],
+        "name": "MAX_WITHDRAWAL",
+        "outputs": [{ "name": "", "type": "uint256" }],
+        "type": "function"
+    },
+    {
+        "constant": true,
+        "inputs": [],
+        "name": "totalRegistrations",
+        "outputs": [{ "name": "", "type": "uint256" }],
+        "type": "function"
+    },
+    {
+        "constant": true,
+        "inputs": [],
+        "name": "totalActiveUsers",
+        "outputs": [{ "name": "", "type": "uint256" }],
+        "type": "function"
+    },
+    {
+        "constant": true,
+        "inputs": [],
+        "name": "totalPoolBalance",
+        "outputs": [{ "name": "", "type": "uint256" }],
+        "type": "function"
+    },
+    {
+        "constant": true,
+        "inputs": [{ "name": "user", "type": "address" }],
+        "name": "getUserInfo",
+        "outputs": [
+            { "name": "joinTime", "type": "uint256" },
+            { "name": "totalWithdrawn", "type": "uint256" },
+            { "name": "lastWithdrawMonth", "type": "uint256" },
+            { "name": "referrer", "type": "address" },
+            { "name": "registered", "type": "bool" },
+            { "name": "isActive", "type": "bool" },
+            { "name": "withdrawnThisMonth", "type": "bool" }
+        ],
+        "type": "function"
+    },
+    {
+        "constant": true,
+        "inputs": [],
+        "name": "getPoolInfo",
+        "outputs": [
+            { "name": "totalUsers", "type": "uint256" },
+            { "name": "balance", "type": "uint256" },
+            { "name": "currentMonth", "type": "uint256" },
+            { "name": "monthInitialized", "type": "bool" },
+            { "name": "sharePerUser", "type": "uint256" },
+            { "name": "totalRegs", "type": "uint256" },
+            { "name": "maxRegs", "type": "uint256" }
+        ],
+        "type": "function"
+    },
+    {
+        "constant": true,
+        "inputs": [{ "name": "user", "type": "address" }],
+        "name": "getRemainingWithdrawal",
+        "outputs": [{ "name": "", "type": "uint256" }],
+        "type": "function"
+    },
+    {
+        "constant": false,
+        "inputs": [{ "name": "_referrer", "type": "address" }],
+        "name": "register",
+        "outputs": [],
+        "type": "function"
+    },
+    {
+        "constant": false,
+        "inputs": [{ "name": "amount", "type": "uint256" }],
+        "name": "depositToPool",
+        "outputs": [],
+        "type": "function"
+    },
+    {
+        "constant": false,
+        "inputs": [],
+        "name": "withdraw",
+        "outputs": [],
+        "type": "function"
+    },
+    {
+        "constant": false,
+        "inputs": [],
+        "name": "cancel",
+        "outputs": [],
+        "type": "function"
+    }
 ];
 
-// ==================== متغیرهای سراسری ====================
+// ==================== GLOBAL VARIABLES ====================
 let web3;
 let contract;
 let usdtContract;
 let userAddress;
 let refreshInterval;
 let isProcessing = false;
-let currentLang = "fa";
 
-// ==================== دیکشنری ترجمه ====================
-const translations = {
-    fa: {
-        mainTitle: "مشارکت در سود ماهانه",
-        mainSubtitle: "ثبت‌نام 105 USDT | پاداش معرف 10 USDT | حداکثر برداشت 300 USDT",
-        connectText: "اتصال کیف پول",
-        tabDepositText: "واریز به استخر",
-        tabRegisterText: "ثبت‌نام",
-        tabWithdrawText: "برداشت سود",
-        tabCancelText: "انصراف",
-        tabProfileText: "پروفایل",
-        depositTitle: "واریز به استخر",
-        registerTitle: "ثبت‌نام در طرح",
-        withdrawTitle: "برداشت سود",
-        cancelTitle: "انصراف از طرح",
-        profileTitle: "اطلاعات کاربری",
-        poolBalanceLabel: "موجودی استخر",
-        activeUsersLabel: "کاربران فعال",
-        amountLabel: "مبلغ (USDT)",
-        depositBtnText: "واریز به استخر",
-        depositInfo: "هر کسی می‌تواند به استخر واریز کند. با واریز شما، سود همه کاربران افزایش می‌یابد!",
-        referrerLabel: "آدرس معرف (اختیاری)",
-        registerBtnText: "ثبت‌نام (105 USDT)",
-        registerInfo: "ثبت‌نام فقط یکبار انجام می‌شود و برای برداشت سود الزامی است",
-        shareLabel: "سود این ماه",
-        remainingLabel: "باقیمانده قابل برداشت",
-        withdrawBtnText: "برداشت سود ماهانه",
-        calcInfo: "سهم هر کاربر = موجودی استخر ÷ تعداد کاربران فعال",
-        maxWithdrawInfo: "حداکثر برداشت کل: 300 USDT",
-        cancelBtnText: "درخواست انصراف",
-        cancelInfo: "پس از انصراف، دیگر سود ماهانه دریافت نمی‌کنید و هزینه ثبت‌نام بازگردانده نمی‌شود. درخواست انصراف توسط مدیر بررسی می‌شود و در صورت احراز شرایط، مابقی مبلغ به کیف پول شما واریز می‌گردد.",
-        notRegistered: "شما ثبت‌نام نکرده‌اید",
-        notRegisteredDesc: "برای برداشت سود، ابتدا ثبت‌نام کنید",
-        feeText: "💰 هزینه ثبت‌نام",
-        joinDate: "📅 تاریخ عضویت",
-        totalWithdrawn: "💰 کل برداشت",
-        status: "🔘 وضعیت حساب",
-        statusActive: "فعال",
-        statusInactive: "غیرفعال",
-        monthWithdrawn: "🔄 برداشت این ماه",
-        monthDone: "انجام شده",
-        monthNotDone: "انجام نشده"
-    },
-    en: {
-        mainTitle: "Monthly Profit Sharing",
-        mainSubtitle: "Registration 105 USDT | Referral Reward 10 USDT | Max Withdrawal 300 USDT",
-        connectText: "Connect Wallet",
-        tabDepositText: "Deposit",
-        tabRegisterText: "Register",
-        tabWithdrawText: "Withdraw",
-        tabCancelText: "Cancel",
-        tabProfileText: "Profile",
-        depositTitle: "Deposit to Pool",
-        registerTitle: "Register Plan",
-        withdrawTitle: "Withdraw Profit",
-        cancelTitle: "Cancel Plan",
-        profileTitle: "User Profile",
-        poolBalanceLabel: "Pool Balance",
-        activeUsersLabel: "Active Users",
-        amountLabel: "Amount (USDT)",
-        depositBtnText: "Deposit to Pool",
-        depositInfo: "Anyone can deposit to the pool. Your deposit increases everyone's monthly profit!",
-        referrerLabel: "Referrer Address (Optional)",
-        registerBtnText: "Register (105 USDT)",
-        registerInfo: "Registration is one-time and required for profit withdrawal",
-        shareLabel: "This Month Share",
-        remainingLabel: "Remaining Withdrawable",
-        withdrawBtnText: "Withdraw Monthly Profit",
-        calcInfo: "Share per user = Pool Balance ÷ Active Users",
-        maxWithdrawInfo: "Max Total Withdrawal: 300 USDT",
-        cancelBtnText: "Request Cancellation",
-        cancelInfo: "After cancellation, you will no longer receive monthly profits and the registration fee will not be refunded. The cancellation request will be reviewed by the admin, and if eligible, the remaining amount will be sent to your wallet.",
-        notRegistered: "Not Registered",
-        notRegisteredDesc: "You need to register first to withdraw profits",
-        feeText: "💰 Registration Fee",
-        joinDate: "📅 Join Date",
-        totalWithdrawn: "💰 Total Withdrawn",
-        status: "🔘 Account Status",
-        statusActive: "Active",
-        statusInactive: "Inactive",
-        monthWithdrawn: "🔄 This Month Withdrawal",
-        monthDone: "Done",
-        monthNotDone: "Not Done"
-    }
-};
-
-// ==================== توابع کمکی ====================
-function setLanguage(lang) {
-    currentLang = lang;
-    const t = translations[lang];
-    
-    document.getElementById("mainTitle").innerText = t.mainTitle;
-    document.getElementById("mainSubtitle").innerText = t.mainSubtitle;
-    document.getElementById("connectText").innerText = t.connectText;
-    document.getElementById("tabDepositText").innerText = t.tabDepositText;
-    document.getElementById("tabRegisterText").innerText = t.tabRegisterText;
-    document.getElementById("tabWithdrawText").innerText = t.tabWithdrawText;
-    document.getElementById("tabCancelText").innerText = t.tabCancelText;
-    document.getElementById("tabProfileText").innerText = t.tabProfileText;
-    document.getElementById("depositTitle").innerText = t.depositTitle;
-    document.getElementById("registerTitle").innerText = t.registerTitle;
-    document.getElementById("withdrawTitle").innerText = t.withdrawTitle;
-    document.getElementById("cancelTitle").innerText = t.cancelTitle;
-    document.getElementById("profileTitle").innerText = t.profileTitle;
-    document.getElementById("poolBalanceLabel").innerText = t.poolBalanceLabel;
-    document.getElementById("activeUsersLabel").innerText = t.activeUsersLabel;
-    document.getElementById("amountLabel").innerText = t.amountLabel;
-    document.getElementById("depositBtnText").innerText = t.depositBtnText;
-    document.getElementById("depositInfo").innerText = t.depositInfo;
-    document.getElementById("referrerLabel").innerText = t.referrerLabel;
-    document.getElementById("registerBtnText").innerText = t.registerBtnText;
-    document.getElementById("registerInfo").innerText = t.registerInfo;
-    document.getElementById("shareLabel").innerText = t.shareLabel;
-    document.getElementById("remainingLabel").innerText = t.remainingLabel;
-    document.getElementById("withdrawBtnText").innerText = t.withdrawBtnText;
-    document.getElementById("calcInfo").innerText = t.calcInfo;
-    document.getElementById("maxWithdrawInfo").innerText = t.maxWithdrawInfo;
-    document.getElementById("cancelBtnText").innerText = t.cancelBtnText;
-    document.getElementById("cancelInfo").innerText = t.cancelInfo;
-    
-    document.querySelectorAll(".lang-btn").forEach(btn => btn.classList.remove("active"));
-    if (lang === "fa") document.getElementById("langFa").classList.add("active");
-    else document.getElementById("langEn").classList.add("active");
-    
-    document.body.setAttribute("dir", lang === "fa" ? "rtl" : "ltr");
-    loadUserInfo();
-}
-
+// ==================== HELPER FUNCTIONS ====================
 function showAlert(message, type = "info") {
-    const container = document.getElementById("alertContainer");
     const alertDiv = document.createElement("div");
     alertDiv.className = `alert ${type}`;
-    alertDiv.innerHTML = `<i class="fas ${type === 'success' ? 'fa-check-circle' : type === 'error' ? 'fa-times-circle' : type === 'warning' ? 'fa-exclamation-triangle' : 'fa-info-circle'}"></i> ${message}`;
+    alertDiv.innerHTML = message;
+    const container = document.getElementById("alertContainer");
     container.appendChild(alertDiv);
     setTimeout(() => alertDiv.remove(), 5000);
 }
 
 function formatUSDT(amount) {
-    if (!amount && amount !== 0) return "0 USDT";
+    if (!amount && amount !== 0) return "-";
     return (Number(amount) / 1e6).toFixed(2) + " USDT";
 }
 
@@ -205,16 +177,42 @@ function formatAddress(addr) {
     return addr.slice(0, 6) + "..." + addr.slice(-4);
 }
 
-// ==================== بارگذاری اطلاعات ====================
+function setDepositAmount(amount) {
+    document.getElementById("depositAmount").value = amount;
+}
+
+async function estimateGasWithBuffer(method, from, params = []) {
+    try {
+        let estimatedGas;
+        if (params.length > 0) {
+            estimatedGas = await method(...params).estimateGas({ from });
+        } else {
+            estimatedGas = await method().estimateGas({ from });
+        }
+        const gasWithBuffer = Math.floor(estimatedGas * GAS_LIMIT_MULTIPLIER);
+        const finalGas = Math.min(gasWithBuffer, DEFAULT_GAS_LIMIT * 2);
+        console.log(`Gas تخمینی: ${estimatedGas}, با بافر: ${finalGas}`);
+        return finalGas;
+    } catch (error) {
+        console.warn("خطا در تخمین Gas:", error);
+        return DEFAULT_GAS_LIMIT;
+    }
+}
+
+// ==================== LOAD DATA ====================
 async function loadPoolInfo() {
     if (!contract) return;
     try {
         const poolInfo = await contract.methods.getPoolInfo().call();
+        document.getElementById("totalUsers").innerText = poolInfo[0].toString();
         document.getElementById("poolBalance").innerHTML = formatUSDT(poolInfo[1]);
-        document.getElementById("totalUsers").innerText = Number(poolInfo[0]).toLocaleString();
+        document.getElementById("currentMonth").innerText = poolInfo[2].toString();
+        document.getElementById("monthStatus").innerHTML = poolInfo[3] ? "✅ فعال" : "⏳ غیرفعال";
         document.getElementById("sharePerUser").innerHTML = formatUSDT(poolInfo[4]);
+        document.getElementById("totalRegs").innerText = poolInfo[5].toString();
+        console.log("اطلاعات استخر بارگذاری شد");
     } catch (error) {
-        console.error("خطا:", error);
+        console.error("خطا در بارگذاری استخر:", error);
     }
 }
 
@@ -224,57 +222,69 @@ async function loadUserInfo() {
         const userInfo = await contract.methods.getUserInfo(userAddress).call();
         const remaining = await contract.methods.getRemainingWithdrawal(userAddress).call();
         
-        document.getElementById("remainingWithdraw").innerHTML = formatUSDT(remaining);
+        const joinTime = new Date(Number(userInfo[0]) * 1000).toLocaleDateString("fa-IR");
+        const isRegistered = userInfo[4];
         
-        if (!userInfo[4]) {
-            const t = translations[currentLang];
+        if (!isRegistered) {
             document.getElementById("userInfoSection").innerHTML = `
-                <div class="user-details" style="text-align: center; padding: 30px;">
-                    <i class="fas fa-user-slash" style="font-size: 48px; color: #ef4444; margin-bottom: 16px; display: block;"></i>
-                    <strong style="color: #f1f5f9;">${t.notRegistered}</strong>
-                    <p style="color: #94a3b8; margin-top: 8px;">${t.notRegisteredDesc}</p>
-                    <div style="margin-top: 16px; background: linear-gradient(135deg, #f59e0b, #d97706); border-radius: 12px; padding: 12px;">
-                        <p style="color: white; font-size: 12px;">${t.feeText}: 105 USDT</p>
-                    </div>
+                <div class="info-box" style="background: #fff8e1;">
+                    <p>❌ <strong>شما هنوز ثبت‌نام نکرده‌اید</strong></p>
+                    <p>برای برداشت سود، ابتدا باید ثبت‌نام کنید (1 USDT)</p>
+                    <p style="margin-top: 10px;">🔹 <strong>مراحل:</strong></p>
+                    <p>1. ثبت‌نام با 1 USDT</p>
+                    <p>2. منتظر فعال‌سازی ماه توسط مدیر باشید</p>
+                    <p>3. سود خود را برداشت کنید</p>
+                    <p style="margin-top: 10px;">💡 <strong>نکته:</strong> حتی بدون ثبت‌نام می‌توانید به استخر واریز کنید!</p>
                 </div>
             `;
             return;
         }
         
-        const joinTime = userInfo[0] != 0 ? new Date(Number(userInfo[0]) * 1000).toLocaleDateString(currentLang === "fa" ? "fa-IR" : "en-US") : "-";
-        const t = translations[currentLang];
-        
         document.getElementById("userInfoSection").innerHTML = `
             <div class="user-details">
                 <div class="detail-row">
-                    <span class="detail-label">${t.joinDate}</span>
+                    <span class="detail-label">📅 تاریخ عضویت:</span>
                     <span class="detail-value">${joinTime}</span>
                 </div>
                 <div class="detail-row">
-                    <span class="detail-label">${t.totalWithdrawn}</span>
+                    <span class="detail-label">💰 کل برداشت:</span>
                     <span class="detail-value">${formatUSDT(userInfo[1])}</span>
                 </div>
                 <div class="detail-row">
-                    <span class="detail-label">${t.status}</span>
-                    <span class="detail-value">${userInfo[5] ? `<i class="fas fa-check-circle" style="color:#10b981"></i> ${t.statusActive}` : `<i class="fas fa-times-circle" style="color:#ef4444"></i> ${t.statusInactive}`}</span>
+                    <span class="detail-label">📊 باقیمانده قابل برداشت:</span>
+                    <span class="detail-value ${Number(remaining) > 0 ? 'positive' : ''}">${formatUSDT(remaining)}</span>
                 </div>
                 <div class="detail-row">
-                    <span class="detail-label">${t.monthWithdrawn}</span>
-                    <span class="detail-value">${userInfo[6] ? `<i class="fas fa-check-circle" style="color:#10b981"></i> ${t.monthDone}` : `<i class="fas fa-hourglass-half" style="color:#f59e0b"></i> ${t.monthNotDone}`}</span>
+                    <span class="detail-label">📆 آخرین ماه برداشت:</span>
+                    <span class="detail-value">${userInfo[2] && userInfo[2] != 0 ? userInfo[2] : "هیچ"}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">👥 آدرس معرف:</span>
+                    <span class="detail-value">${formatAddress(userInfo[3])}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">🔘 وضعیت:</span>
+                    <span class="detail-value ${userInfo[5] ? 'positive' : ''}">${userInfo[5] ? "✅ فعال" : "❌ غیرفعال"}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">🔄 وضعیت برداشت این ماه:</span>
+                    <span class="detail-value">${userInfo[6] ? "✅ انجام شده" : "⏳ انجام نشده"}</span>
                 </div>
             </div>
         `;
     } catch (error) {
-        console.error("خطا:", error);
+        console.error("خطا در بارگذاری اطلاعات کاربر:", error);
     }
 }
 
-// ==================== بررسی مجوز USDT ====================
+// ==================== CHECK ALLOWANCE ====================
 async function checkAllowance() {
     if (!usdtContract || !userAddress) return 0;
     try {
-        return await usdtContract.methods.allowance(userAddress, CONTRACT_ADDRESS).call();
+        const allowance = await usdtContract.methods.allowance(userAddress, CONTRACT_ADDRESS).call();
+        return allowance;
     } catch (error) {
+        console.error("خطا در بررسی مجوز:", error);
         return 0;
     }
 }
@@ -282,220 +292,262 @@ async function checkAllowance() {
 async function approveUSDT(amount) {
     if (!usdtContract || !userAddress) return false;
     try {
-        showAlert(currentLang === "fa" ? "در حال تایید مجوز USDT..." : "Approving USDT...", "info");
-        await usdtContract.methods.approve(CONTRACT_ADDRESS, amount).send({
+        showAlert("در حال تایید مجوز USDT... لطفاً تراکنش را تأیید کنید", "info");
+        const gasLimit = await estimateGasWithBuffer(usdtContract.methods.approve, userAddress, [CONTRACT_ADDRESS, amount]);
+        const tx = await usdtContract.methods.approve(CONTRACT_ADDRESS, amount).send({
             from: userAddress,
-            gas: 200000
+            gas: gasLimit
         });
-        showAlert(currentLang === "fa" ? "✅ مجوز USDT تایید شد!" : "✅ USDT Approved!", "success");
+        showAlert("✅ مجوز USDT با موفقیت تایید شد!", "success");
         return true;
     } catch (error) {
-        showAlert(currentLang === "fa" ? "❌ تایید مجوز ناموفق" : "❌ Approval Failed", "error");
+        console.error("خطا در تایید مجوز:", error);
+        showAlert("❌ تایید مجوز ناموفق: " + error.message, "error");
         return false;
     }
 }
 
-// ==================== عملیات اصلی ====================
+// ==================== DEPOSIT TO POOL (برای همه کاربران) ====================
 async function depositToPool() {
     if (!contract || !userAddress) {
-        showAlert(currentLang === "fa" ? "لطفاً کیف پول را متصل کنید" : "Please connect wallet", "error");
+        showAlert("لطفاً ابتدا کیف پول خود را متصل کنید", "error");
         return;
     }
     
-    const amountUSDT = parseFloat(document.getElementById("depositAmount").value);
+    const amountInput = document.getElementById("depositAmount");
+    const amountUSDT = parseFloat(amountInput.value);
+    
     if (!amountUSDT || amountUSDT <= 0) {
-        showAlert(currentLang === "fa" ? "مبلغ معتبر وارد کنید" : "Enter valid amount", "error");
+        showAlert("لطفاً مبلغ معتبر وارد کنید", "error");
         return;
     }
     
     const amount = amountUSDT * 1e6;
     
     if (isProcessing) {
-        showAlert(currentLang === "fa" ? "لطفاً صبر کنید..." : "Please wait...", "warning");
+        showAlert("لطفاً صبر کنید، تراکنش قبلی در حال انجام است", "warning");
         return;
     }
     
     isProcessing = true;
-    const btn = document.getElementById("depositBtn");
-    btn.disabled = true;
-    btn.innerHTML = '<i class="fas fa-spinner fa-pulse"></i> ' + (currentLang === "fa" ? "در حال واریز..." : "Depositing...");
+    const depositBtn = document.getElementById("depositBtn");
+    depositBtn.disabled = true;
+    depositBtn.innerHTML = "<div class='loading'></div> در حال واریز...";
     
     try {
         const allowance = await checkAllowance();
+        
         if (Number(allowance) < amount) {
             const approved = await approveUSDT(amount);
             if (!approved) {
                 isProcessing = false;
-                btn.disabled = false;
-                btn.innerHTML = '<i class="fas fa-wallet"></i> ' + (currentLang === "fa" ? "واریز به استخر" : "Deposit to Pool");
+                depositBtn.disabled = false;
+                depositBtn.innerHTML = "💸 واریز به استخر";
                 return;
             }
         }
         
-        await contract.methods.depositToPool(amount).send({
+        showAlert("در حال واریز به استخر... لطفاً تراکنش را تأیید کنید", "info");
+        
+        const gasLimit = await estimateGasWithBuffer(contract.methods.depositToPool, userAddress, [amount]);
+        const tx = await contract.methods.depositToPool(amount).send({
             from: userAddress,
-            gas: 500000
+            gas: gasLimit
         });
         
-        showAlert(`${amountUSDT} USDT ${currentLang === "fa" ? "واریز شد!" : "Deposited!"}`, "success");
-        document.getElementById("depositAmount").value = "";
+        showAlert(`✅ واریز ${amountUSDT} USDT به استخر با موفقیت انجام شد! تراکنش: ${formatAddress(tx.transactionHash)}`, "success");
+        amountInput.value = "";
         await loadPoolInfo();
         await loadUserInfo();
+        
     } catch (error) {
-        showAlert(currentLang === "fa" ? "❌ واریز ناموفق" : "❌ Deposit Failed", "error");
+        console.error("خطا در واریز:", error);
+        if (error.message.includes("user rejected")) {
+            showAlert("شما تراکنش را رد کردید", "warning");
+        } else {
+            showAlert("❌ واریز ناموفق: " + error.message.slice(0, 150), "error");
+        }
     } finally {
         isProcessing = false;
-        btn.disabled = false;
-        btn.innerHTML = '<i class="fas fa-wallet"></i> ' + (currentLang === "fa" ? "واریز به استخر" : "Deposit to Pool");
+        depositBtn.disabled = false;
+        depositBtn.innerHTML = "💸 واریز به استخر";
     }
 }
 
+// ==================== REGISTER ====================
 async function register() {
     if (!contract || !userAddress) {
-        showAlert(currentLang === "fa" ? "لطفاً کیف پول را متصل کنید" : "Please connect wallet", "error");
+        showAlert("لطفاً ابتدا کیف پول خود را متصل کنید", "error");
         return;
     }
     
-    let referrer = document.getElementById("referrerAddress").value.trim();
-    if (!referrer) referrer = "0x0000000000000000000000000000000000000000";
-    else if (!web3.utils.isAddress(referrer)) {
-        showAlert(currentLang === "fa" ? "آدرس معرف نامعتبر است" : "Invalid referrer address", "error");
-        return;
+    const referrer = document.getElementById("referrerAddress").value.trim();
+    let referrerAddress = "0x0000000000000000000000000000000000000000";
+    
+    if (referrer && referrer !== "") {
+        if (!web3.utils.isAddress(referrer)) {
+            showAlert("آدرس معرف نامعتبر است", "error");
+            return;
+        }
+        referrerAddress = referrer;
     }
     
     if (isProcessing) {
-        showAlert(currentLang === "fa" ? "لطفاً صبر کنید..." : "Please wait...", "warning");
+        showAlert("لطفاً صبر کنید، تراکنش قبلی در حال انجام است", "warning");
         return;
     }
     
     isProcessing = true;
-    const btn = document.getElementById("registerBtn");
-    btn.disabled = true;
-    btn.innerHTML = '<i class="fas fa-spinner fa-pulse"></i> ' + (currentLang === "fa" ? "در حال ثبت‌نام..." : "Registering...");
+    const registerBtn = document.getElementById("registerBtn");
+    registerBtn.disabled = true;
+    registerBtn.innerHTML = "<div class='loading'></div> در حال ثبت‌نام...";
     
     try {
-        const fee = await contract.methods.REGISTRATION_FEE().call();
         const allowance = await checkAllowance();
+        const fee = await contract.methods.REGISTRATION_FEE().call();
         
         if (Number(allowance) < Number(fee)) {
             const approved = await approveUSDT(fee);
             if (!approved) {
                 isProcessing = false;
-                btn.disabled = false;
-                btn.innerHTML = '<i class="fas fa-check-circle"></i> ' + (currentLang === "fa" ? "ثبت‌نام (105 USDT)" : "Register (105 USDT)");
+                registerBtn.disabled = false;
+                registerBtn.innerHTML = "✅ ثبت‌نام (1 USDT)";
                 return;
             }
         }
         
-        await contract.methods.register(referrer).send({
+        showAlert("در حال ثبت‌نام... لطفاً تراکنش را تأیید کنید", "info");
+        
+        const gasLimit = await estimateGasWithBuffer(contract.methods.register, userAddress, [referrerAddress]);
+        const tx = await contract.methods.register(referrerAddress).send({
             from: userAddress,
-            gas: 500000
+            gas: gasLimit
         });
         
-        showAlert(currentLang === "fa" ? "✅ ثبت‌نام موفقیت‌آمیز بود!" : "✅ Registration Successful!", "success");
+        showAlert("✅ ثبت‌نام با موفقیت انجام شد! تراکنش: " + formatAddress(tx.transactionHash), "success");
         document.getElementById("referrerAddress").value = "";
         await loadUserInfo();
         await loadPoolInfo();
+        
     } catch (error) {
-        if (error.message.includes("Max regs")) showAlert(currentLang === "fa" ? "❌ حداکثر ثبت‌نام تکمیل شده" : "❌ Max registrations reached", "error");
-        else if (error.message.includes("Registered")) showAlert(currentLang === "fa" ? "❌ قبلاً ثبت‌نام کرده‌اید" : "❌ Already registered", "error");
-        else showAlert(currentLang === "fa" ? "❌ ثبت‌نام ناموفق" : "❌ Registration Failed", "error");
+        console.error("خطا در ثبت‌نام:", error);
+        if (error.message.includes("user rejected")) {
+            showAlert("شما تراکنش را رد کردید", "warning");
+        } else if (error.message.includes("Max regs")) {
+            showAlert("❌ حداکثر ثبت‌نام به پایان رسیده است", "error");
+        } else if (error.message.includes("Registered")) {
+            showAlert("❌ شما قبلاً ثبت‌نام کرده‌اید", "error");
+        } else {
+            showAlert("❌ ثبت‌نام ناموفق: " + error.message.slice(0, 150), "error");
+        }
     } finally {
         isProcessing = false;
-        btn.disabled = false;
-        btn.innerHTML = '<i class="fas fa-check-circle"></i> ' + (currentLang === "fa" ? "ثبت‌نام (105 USDT)" : "Register (105 USDT)");
+        registerBtn.disabled = false;
+        registerBtn.innerHTML = "✅ ثبت‌نام (1 USDT)";
     }
 }
 
+// ==================== WITHDRAW ====================
 async function withdraw() {
     if (!contract || !userAddress) {
-        showAlert(currentLang === "fa" ? "لطفاً کیف پول را متصل کنید" : "Please connect wallet", "error");
+        showAlert("لطفاً ابتدا کیف پول خود را متصل کنید", "error");
         return;
     }
     
     if (isProcessing) {
-        showAlert(currentLang === "fa" ? "لطفاً صبر کنید..." : "Please wait...", "warning");
+        showAlert("لطفاً صبر کنید، تراکنش قبلی در حال انجام است", "warning");
         return;
     }
     
     isProcessing = true;
-    const btn = document.getElementById("withdrawBtn");
-    btn.disabled = true;
-    btn.innerHTML = '<i class="fas fa-spinner fa-pulse"></i> ' + (currentLang === "fa" ? "در حال برداشت..." : "Withdrawing...");
+    const withdrawBtn = document.getElementById("withdrawBtn");
+    withdrawBtn.disabled = true;
+    withdrawBtn.innerHTML = "<div class='loading'></div> در حال برداشت...";
     
     try {
-        await contract.methods.withdraw().send({
+        showAlert("در حال برداشت سود... لطفاً تراکنش را تأیید کنید", "info");
+        
+        const gasLimit = await estimateGasWithBuffer(contract.methods.withdraw, userAddress, []);
+        const tx = await contract.methods.withdraw().send({
             from: userAddress,
-            gas: 500000
+            gas: gasLimit
         });
         
-        showAlert(currentLang === "fa" ? "✅ برداشت موفقیت‌آمیز بود!" : "✅ Withdrawal Successful!", "success");
+        showAlert("✅ برداشت با موفقیت انجام شد! تراکنش: " + formatAddress(tx.transactionHash), "success");
         await loadUserInfo();
         await loadPoolInfo();
+        
     } catch (error) {
-        if (error.message.includes("Month not init")) showAlert(currentLang === "fa" ? "❌ ماه جاری فعال نشده است" : "❌ Month not initialized", "warning");
-        else if (error.message.includes("Already withdrawn")) showAlert(currentLang === "fa" ? "❌ این ماه برداشت کرده‌اید" : "❌ Already withdrawn this month", "warning");
-        else if (error.message.includes("Not active")) showAlert(currentLang === "fa" ? "❌ حساب شما فعال نیست" : "❌ Account not active", "error");
-        else showAlert(currentLang === "fa" ? "❌ برداشت ناموفق" : "❌ Withdrawal Failed", "error");
+        console.error("خطا در برداشت:", error);
+        if (error.message.includes("user rejected")) {
+            showAlert("شما تراکنش را رد کردید", "warning");
+        } else if (error.message.includes("Month not init")) {
+            showAlert("❌ ماه جاری هنوز فعال نشده است. منتظر بمانید", "warning");
+        } else if (error.message.includes("Already withdrawn")) {
+            showAlert("❌ شما قبلاً در این ماه برداشت کرده‌اید", "warning");
+        } else if (error.message.includes("Not active")) {
+            showAlert("❌ حساب شما فعال نیست", "error");
+        } else if (error.message.includes("registered")) {
+            showAlert("❌ ابتدا باید ثبت‌نام کنید", "error");
+        } else {
+            showAlert("❌ برداشت ناموفق: " + error.message.slice(0, 150), "error");
+        }
     } finally {
         isProcessing = false;
-        btn.disabled = false;
-        btn.innerHTML = '<i class="fas fa-money-bill-wave"></i> ' + (currentLang === "fa" ? "برداشت سود ماهانه" : "Withdraw Monthly Profit");
+        withdrawBtn.disabled = false;
+        withdrawBtn.innerHTML = "💸 برداشت سود ماهانه";
     }
 }
 
+// ==================== CANCEL ====================
 async function cancel() {
     if (!contract || !userAddress) {
-        showAlert(currentLang === "fa" ? "لطفاً کیف پول را متصل کنید" : "Please connect wallet", "error");
+        showAlert("لطفاً ابتدا کیف پول خود را متصل کنید", "error");
         return;
     }
     
-    const confirmed = await Swal.fire({
-        title: currentLang === "fa" ? '⚠️ درخواست انصراف' : '⚠️ Cancellation Request',
-        html: currentLang === "fa" 
-            ? 'آیا از انصراف اطمینان دارید؟<br><br>پس از انصراف:<br>• دیگر سود ماهانه دریافت نمی‌کنید<br>• هزینه ثبت‌نام بازگردانده نمی‌شود' 
-            : 'Are you sure you want to cancel?<br><br>After cancellation:<br>• You will no longer receive monthly profits<br>• Registration fee will not be refunded',
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonColor: '#ef4444',
-        cancelButtonColor: '#6366f1',
-        confirmButtonText: currentLang === "fa" ? 'بله، درخواست می‌دهم' : 'Yes, Request',
-        cancelButtonText: currentLang === "fa" ? 'انصراف' : 'Cancel',
-        background: '#1e1e2f',
-        color: '#f1f5f9'
-    });
-    
-    if (!confirmed.isConfirmed) return;
-    
     if (isProcessing) {
-        showAlert(currentLang === "fa" ? "لطفاً صبر کنید..." : "Please wait...", "warning");
+        showAlert("لطفاً صبر کنید، تراکنش قبلی در حال انجام است", "warning");
+        return;
+    }
+    
+    if (!confirm("⚠️ هشدار: آیا از انصراف از طرح اطمینان دارید؟\n\nپس از انصراف:\n• دیگر سود دریافت نمی‌کنید\n• هزینه ثبت‌نام بازگردانده نمی‌شود\n• امکان ثبت‌نام مجدد وجود ندارد\n\nآیا مطمئن هستید؟")) {
         return;
     }
     
     isProcessing = true;
-    const btn = document.getElementById("cancelBtn");
-    btn.disabled = true;
-    btn.innerHTML = '<i class="fas fa-spinner fa-pulse"></i> ' + (currentLang === "fa" ? "در حال ارسال درخواست..." : "Sending request...");
+    const cancelBtn = document.getElementById("cancelBtn");
+    cancelBtn.disabled = true;
+    cancelBtn.innerHTML = "<div class='loading'></div> در حال انصراف...";
     
     try {
-        await contract.methods.cancel().send({
+        showAlert("در حال انصراف... لطفاً تراکنش را تأیید کنید", "info");
+        
+        const gasLimit = await estimateGasWithBuffer(contract.methods.cancel, userAddress, []);
+        const tx = await contract.methods.cancel().send({
             from: userAddress,
-            gas: 500000
+            gas: gasLimit
         });
         
-        showAlert(currentLang === "fa" ? "✅ درخواست انصراف با موفقیت ثبت شد! مدیر بررسی می‌کند." : "✅ Cancellation request submitted! Admin will review.", "success");
+        showAlert("✅ انصراف با موفقیت انجام شد!", "success");
         await loadUserInfo();
         await loadPoolInfo();
+        
     } catch (error) {
-        showAlert(currentLang === "fa" ? "❌ خطا در ثبت درخواست" : "❌ Request failed", "error");
+        console.error("خطا در انصراف:", error);
+        if (error.message.includes("user rejected")) {
+            showAlert("شما تراکنش را رد کردید", "warning");
+        } else {
+            showAlert("❌ انصراف ناموفق: " + error.message.slice(0, 150), "error");
+        }
     } finally {
         isProcessing = false;
-        btn.disabled = false;
-        btn.innerHTML = '<i class="fas fa-exclamation-triangle"></i> ' + (currentLang === "fa" ? "درخواست انصراف" : "Request Cancellation");
+        cancelBtn.disabled = false;
+        cancelBtn.innerHTML = "❌ انصراف از طرح";
     }
 }
 
-// ==================== اتصال کیف پول ====================
+// ==================== CONNECT WALLET ====================
 async function switchToPolygon() {
     try {
         await window.ethereum.request({
@@ -503,40 +555,39 @@ async function switchToPolygon() {
             params: [{ chainId: "0x89" }]
         });
         return true;
-    } catch (error) {
-        if (error.code === 4902) {
-            await window.ethereum.request({
-                method: "wallet_addEthereumChain",
-                params: [{
-                    chainId: "0x89",
-                    chainName: "Polygon Mainnet",
-                    nativeCurrency: { name: "MATIC", symbol: "MATIC", decimals: 18 },
-                    rpcUrls: ["https://polygon-rpc.com"],
-                    blockExplorerUrls: ["https://polygonscan.com"]
-                }]
-            });
-            return true;
+    } catch (switchError) {
+        if (switchError.code === 4902) {
+            try {
+                await window.ethereum.request({
+                    method: "wallet_addEthereumChain",
+                    params: [{
+                        chainId: "0x89",
+                        chainName: "Polygon Mainnet",
+                        nativeCurrency: { name: "MATIC", symbol: "MATIC", decimals: 18 },
+                        rpcUrls: ["https://polygon-rpc.com"],
+                        blockExplorerUrls: ["https://polygonscan.com"]
+                    }]
+                });
+                return true;
+            } catch (addError) {
+                console.error("خطا در افزودن شبکه:", addError);
+                return false;
+            }
         }
         return false;
     }
 }
 
 async function connectWallet() {
-    if (!window.ethereum) {
-        Swal.fire({
-            title: currentLang === "fa" ? 'متاماسک نصب نیست!' : 'MetaMask not installed!',
-            text: currentLang === "fa" ? 'لطفاً متاماسک را نصب کنید' : 'Please install MetaMask',
-            icon: 'error',
-            confirmButtonText: currentLang === "fa" ? 'نصب متاماسک' : 'Install MetaMask'
-        }).then(() => {
-            window.open("https://metamask.io/download/", "_blank");
-        });
+    if (typeof window.ethereum === "undefined") {
+        showAlert("لطفاً متاماسک را نصب کنید!", "error");
+        window.open("https://metamask.io/download/", "_blank");
         return;
     }
     
-    const btn = document.getElementById("connectBtn");
-    btn.disabled = true;
-    btn.innerHTML = '<i class="fas fa-spinner fa-pulse"></i> ' + (currentLang === "fa" ? "در حال اتصال..." : "Connecting...");
+    const connectBtn = document.getElementById("connectBtn");
+    connectBtn.disabled = true;
+    connectBtn.innerHTML = "<div class='loading'></div> در حال اتصال...";
     
     try {
         const accounts = await window.ethereum.request({ method: "eth_requestAccounts" });
@@ -544,21 +595,28 @@ async function connectWallet() {
         
         const chainId = await window.ethereum.request({ method: "eth_chainId" });
         if (chainId !== "0x89") {
-            showAlert(currentLang === "fa" ? "در حال سوئیچ به پالیگان..." : "Switching to Polygon...", "info");
-            await switchToPolygon();
-            setTimeout(() => window.location.reload(), 1000);
-            return;
+            showAlert("لطفاً به شبکه پالیگان سوئیچ کنید", "info");
+            const switched = await switchToPolygon();
+            if (!switched) {
+                showAlert("لطفاً به صورت دستی به شبکه پالیگان سوئیچ کنید", "warning");
+                connectBtn.disabled = false;
+                connectBtn.innerHTML = "🔗 اتصال کیف پول";
+                return;
+            }
         }
         
         web3 = new Web3(window.ethereum);
         contract = new web3.eth.Contract(CONTRACT_ABI, CONTRACT_ADDRESS);
         usdtContract = new web3.eth.Contract(USDT_ABI, USDT_ADDRESS);
         
-        document.getElementById("statusText").innerHTML = formatAddress(userAddress);
-        document.getElementById("statusIndicator").classList.add("connected");
+        document.getElementById("statusText").innerHTML = `✅ متصل | ${formatAddress(userAddress)}`;
         document.getElementById("mainContent").style.display = "block";
-        document.getElementById("connectBtn").style.display = "none";
-        document.getElementById("contractAddr").innerHTML = CONTRACT_ADDRESS;
+        connectBtn.style.display = "none";
+        
+        const usdtBalance = await usdtContract.methods.balanceOf(userAddress).call();
+        if (Number(usdtBalance) < 1e6) {
+            showAlert("⚠️ موجودی USDT شما کمتر از 1 است", "warning");
+        }
         
         await loadPoolInfo();
         await loadUserInfo();
@@ -572,40 +630,30 @@ async function connectWallet() {
         }, 30000);
         
     } catch (error) {
-        console.error(error);
-        showAlert(currentLang === "fa" ? "خطا در اتصال" : "Connection error", "error");
-        btn.disabled = false;
-        btn.innerHTML = '<i class="fas fa-plug"></i> ' + (currentLang === "fa" ? "اتصال کیف پول" : "Connect Wallet");
+        console.error("خطا در اتصال:", error);
+        showAlert("خطا در اتصال به کیف پول: " + error.message, "error");
+        connectBtn.disabled = false;
+        connectBtn.innerHTML = "🔗 اتصال کیف پول";
     }
 }
 
-// ==================== رویدادها ====================
-window.onload = () => {
-    if (window.ethereum) {
-        window.ethereum.on("accountsChanged", () => window.location.reload());
-        window.ethereum.on("chainChanged", () => window.location.reload());
-    }
-    
-    document.querySelectorAll('.quick-btn').forEach(btn => {
-        btn.addEventListener('click', () => {
-            const amount = btn.getAttribute('data-amount');
-            document.getElementById("depositAmount").value = amount;
-        });
+// ==================== EVENT LISTENERS ====================
+if (window.ethereum) {
+    window.ethereum.on("accountsChanged", (accounts) => {
+        if (accounts.length === 0) {
+            window.location.reload();
+        } else {
+            userAddress = accounts[0];
+            document.getElementById("statusText").innerHTML = `✅ متصل | ${formatAddress(userAddress)}`;
+            loadUserInfo();
+            loadPoolInfo();
+        }
     });
     
-    document.querySelectorAll('.tab-btn').forEach(btn => {
-        btn.addEventListener('click', () => {
-            const tabId = btn.getAttribute('data-tab');
-            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-            btn.classList.add('active');
-            document.getElementById(tabId).classList.add('active');
-        });
+    window.ethereum.on("chainChanged", () => {
+        window.location.reload();
     });
-    
-    document.getElementById("langFa").addEventListener("click", () => setLanguage("fa"));
-    document.getElementById("langEn").addEventListener("click", () => setLanguage("en"));
-};
+}
 
 document.getElementById("connectBtn").onclick = connectWallet;
 document.getElementById("depositBtn").onclick = depositToPool;
@@ -613,4 +661,6 @@ document.getElementById("registerBtn").onclick = register;
 document.getElementById("withdrawBtn").onclick = withdraw;
 document.getElementById("cancelBtn").onclick = cancel;
 
-console.log("✅ GoldPulse DApp بارگذاری شد | آدرس قرارداد:", CONTRACT_ADDRESS);
+console.log("✅ DApp بارگذاری شد");
+console.log("📞 آدرس قرارداد:", CONTRACT_ADDRESS);
+console.log("💰 آدرس USDT:", USDT_ADDRESS);
